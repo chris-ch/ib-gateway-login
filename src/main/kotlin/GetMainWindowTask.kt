@@ -12,8 +12,8 @@ class GetMainWindowTask
 /**
  * Creates a new instance of the [GetMainWindowTask] class.
  *
- * @param automater The [ibgatewaylogin.IBGatewayLogin] instance
- */ internal constructor(private val automater: IBGatewayLogin) : Callable<Window> {
+ * @param automater The [ibgatewaylogin.IBGatewayLoginManager] instance
+ */ internal constructor(private val automater: IBGatewayLoginManager) : Callable<Window> {
     /**
      * Returns the IBGateway main window, or throws an exception if unable to do so.
      *

@@ -1,3 +1,5 @@
+@file:JvmName("IBGatewayLogin")
+
 package ibgatewaylogin
 
 import java.awt.Toolkit
@@ -6,13 +8,14 @@ import java.io.FileWriter
 import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.lang.instrument.Instrumentation
 
 /**
  * IBGatewayLogin is the component responsible for the interaction with the IBGateway user interface.
  */
-class IBGatewayLogin(userName: String, password: String, tradingMode: String, portNumber: Int) {
+class IBGatewayLoginManager(userName: String, password: String, tradingMode: String, portNumber: Int) {
     /**
-     * Gets the IBAutomater settings.
+     * Gets the IBLoginSettings settings.
      *
      * @return Returns the [IBLoginSettings] instance
      */
@@ -21,7 +24,7 @@ class IBGatewayLogin(userName: String, password: String, tradingMode: String, po
 
     var mainWindow: Window? = null
 
-    private fun run() {
+    internal fun run() {
         try {
             printWriter = PrintWriter(FileWriter("ib-gateway-login.log"), true)
         } catch (exception: IOException) {
@@ -56,23 +59,19 @@ class IBGatewayLogin(userName: String, password: String, tradingMode: String, po
         logMessage("Error: $sw")
     }
 
-    companion object {
-        /**
-         * The Java agent premain method is called before the IBGateway main method.
-         *
-         * @param args The name of a text file containing the values of the IBAutomater settings
-         */
-        fun premain(args: String?) {
-            val userName = System.getenv("IB_USERNAME")
-            val password = System.getenv("IB_PASSWORD")
-            val tradingMode = System.getenv("IB_TRADING_MODE")
-            val portNumber = System.getenv("IB_PORT_NUMBER").toInt()
-            val automater = IBGatewayLogin(userName, password, tradingMode, portNumber)
-            automater.run()
-        }
-    }
-
     init {
         settings = IBLoginSettings(userName, password, tradingMode, portNumber)
     }
+}
+
+/**
+ * The Java agent premain method is called before the IBGateway main method.
+ */
+fun premain(args: String?, instrumentation: Instrumentation) {
+    val userName = System.getenv("IB_USERNAME")
+    val password = System.getenv("IB_PASSWORD")
+    val tradingMode = System.getenv("IB_TRADING_MODE")
+    val portNumber = System.getenv("IB_PORT_NUMBER").toInt()
+    val gatewayLogin = IBGatewayLoginManager(userName, password, tradingMode, portNumber)
+    gatewayLogin.run()
 }

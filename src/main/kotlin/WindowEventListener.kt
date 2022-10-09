@@ -26,8 +26,8 @@ class WindowEventListener
 /**
  * Creates a new instance of the [WindowEventListener] class.
  *
- * @param automater The [ibgatewaylogin.IBGatewayLogin] instance
- */ internal constructor(private val automater: IBGatewayLogin) : AWTEventListener {
+ * @param automater The [ibgatewaylogin.IBGatewayLoginManager] instance
+ */ internal constructor(private val automater: IBGatewayLoginManager) : AWTEventListener {
     private val handledEvents: HashMap<Int?, String?> = object : HashMap<Int?, String?>() {
         init {
             this[WindowEvent.WINDOW_OPENED] = "WINDOW_OPENED"
