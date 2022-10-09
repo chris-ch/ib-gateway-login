@@ -802,7 +802,7 @@ class WindowEventListener
                 val button = getButton(window, buttonText)
                 if (button != null) {
                     automater.logMessage("click button: [$buttonText]")
-                    button.doClick()
+                    //button.doClick()
                 }
 
                 twoFactorConfirmationRequestTime = Instant.now()
