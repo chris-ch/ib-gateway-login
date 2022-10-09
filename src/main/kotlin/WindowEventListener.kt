@@ -51,82 +51,87 @@ class WindowEventListener
     override fun eventDispatched(awtEvent: AWTEvent) {
         val eventId = awtEvent.id
         val window = (awtEvent as WindowEvent).window
-        if (handledEvents.containsKey(eventId)) {
-            automater.logMessage("Window event: [" + handledEvents[eventId] + "] - Window title: [" + getTitle(window) + "] - Window name: [" + window.name + "]")
-        } else {
-            return
+        when {
+            handledEvents.containsKey(eventId) -> {
+                automater.logMessage("Window event: [" + handledEvents[eventId] + "] - Window title: [" + getTitle(window) + "] - Window name: [" + window.name + "]")
+            }
+            else -> {
+                return
+            }
         }
         try {
-            if (handleLoginWindow(window, eventId)) {
-                return
+            when {
+                handleLoginWindow(window, eventId) -> {
+                    return
+                }
+                handleLoginFailedWindow(window, eventId) -> {
+                    return
+                }
+                handleServerDisconnectedWindow(window, eventId) -> {
+                    return
+                }
+                handleTooManyFailedLoginAttemptsWindow(window, eventId) -> {
+                    return
+                }
+                handlePasswordNoticeWindow(window, eventId) -> {
+                    return
+                }
+                handleInitializationWindow(window, eventId) -> {
+                    return
+                }
+                handlePaperTradingAccountWindow(window, eventId) -> {
+                    return
+                }
+                handleUnsupportedVersionWindow(window, eventId) -> {
+                    return
+                }
+                handleConfigurationWindow(window, eventId) -> {
+                    return
+                }
+                handleExistingSessionDetectedWindow(window, eventId) -> {
+                    return
+                }
+                handleReloginRequiredWindow(window, eventId) -> {
+                    return
+                }
+                handleFinancialAdvisorWarningWindow(window, eventId) -> {
+                    return
+                }
+                handleExitSessionSettingWindow(window, eventId) -> {
+                    return
+                }
+                handleApiNotAvailableWindow(window, eventId) -> {
+                    return
+                }
+                handleEnableAutoRestartConfirmationWindow(window, eventId) -> {
+                    return
+                }
+                handleAutoRestartTokenExpiredWindow(window, eventId) -> {
+                    return
+                }
+                handleViewLogsWindow(window, eventId) -> {
+                    return
+                }
+                handleExportFileNameWindow(window, eventId) -> {
+                    return
+                }
+                handleExportFinishedWindow(window, eventId) -> {
+                    return
+                }
+                handleAutoRestartNowWindow(window, eventId) -> {
+                    return
+                }
+                handleTwoFactorAuthenticationWindow(window, eventId) -> {
+                    return
+                }
+                handleDisplayMarketDataWindow(window, eventId) -> {
+                    return
+                }
+                handleUseSslEncryptionWindow(window, eventId) -> {
+                    return
+                }
+                else -> handleUnknownMessageWindow(window, eventId)
             }
-            if (handleLoginFailedWindow(window, eventId)) {
-                return
-            }
-            if (handleServerDisconnectedWindow(window, eventId)) {
-                return
-            }
-            if (handleTooManyFailedLoginAttemptsWindow(window, eventId)) {
-                return
-            }
-            if (handlePasswordNoticeWindow(window, eventId)) {
-                return
-            }
-            if (handleInitializationWindow(window, eventId)) {
-                return
-            }
-            if (handlePaperTradingAccountWindow(window, eventId)) {
-                return
-            }
-            if (handleUnsupportedVersionWindow(window, eventId)) {
-                return
-            }
-            if (handleConfigurationWindow(window, eventId)) {
-                return
-            }
-            if (handleExistingSessionDetectedWindow(window, eventId)) {
-                return
-            }
-            if (handleReloginRequiredWindow(window, eventId)) {
-                return
-            }
-            if (handleFinancialAdvisorWarningWindow(window, eventId)) {
-                return
-            }
-            if (handleExitSessionSettingWindow(window, eventId)) {
-                return
-            }
-            if (handleApiNotAvailableWindow(window, eventId)) {
-                return
-            }
-            if (handleEnableAutoRestartConfirmationWindow(window, eventId)) {
-                return
-            }
-            if (handleAutoRestartTokenExpiredWindow(window, eventId)) {
-                return
-            }
-            if (handleViewLogsWindow(window, eventId)) {
-                return
-            }
-            if (handleExportFileNameWindow(window, eventId)) {
-                return
-            }
-            if (handleExportFinishedWindow(window, eventId)) {
-                return
-            }
-            if (handleAutoRestartNowWindow(window, eventId)) {
-                return
-            }
-            if (handleTwoFactorAuthenticationWindow(window, eventId)) {
-                return
-            }
-            if (handleDisplayMarketDataWindow(window, eventId)) {
-                return
-            }
-            if (handleUseSslEncryptionWindow(window, eventId)) {
-                return
-            }
-            handleUnknownMessageWindow(window, eventId)
         } catch (e: Exception) {
             automater.logError(e)
         }
@@ -790,11 +795,20 @@ class WindowEventListener
         val title = getTitle(window)
         if (title == "Second Factor Authentication") {
             val maxTwoFactorConfirmationAttempts = 3
-            return if (eventId == WindowEvent.WINDOW_OPENED) {
+            if (eventId == WindowEvent.WINDOW_OPENED) {
+                automater.logMessage("selecting IB Key")
+                selectListItem(window, "IB Key")
+                val buttonText = "OK"
+                val button = getButton(window, buttonText)
+                if (button != null) {
+                    automater.logMessage("click button: [$buttonText]")
+                    button.doClick()
+                }
+
                 twoFactorConfirmationRequestTime = Instant.now()
                 twoFactorConfirmationAttempts++
-                automater.logMessage("twoFactorConfirmationAttempts: " + twoFactorConfirmationAttempts + "/" + maxTwoFactorConfirmationAttempts)
-                true
+                automater.logMessage("twoFactorConfirmationAttempts: $twoFactorConfirmationAttempts/$maxTwoFactorConfirmationAttempts")
+                return true
             } else {
                 val delta = Duration.between(twoFactorConfirmationRequestTime, Instant.now())
                 // the timeout can be a few seconds earlier than 3 minutes, so we use 150 seconds to be safe
@@ -830,7 +844,7 @@ class WindowEventListener
                     automater.logMessage("2FA confirmation success")
                     twoFactorConfirmationAttempts = 0
                 }
-                true
+                return true
             }
         }
         return false
@@ -896,10 +910,8 @@ class WindowEventListener
      *
      * @return Returns true if the window title is known, false otherwise
      */
-    private fun isKnownWindowTitle(title: String?): Boolean {
-        return if (title == null) {
-            false
-        } else title == "Second Factor Authentication" || title == "Security Code Card Authentication" || title == "Enter security code"
+    private fun isKnownWindowTitle(title: String): Boolean {
+        return title == "Second Factor Authentication" || title == "Security Code Card Authentication" || title == "Enter security code"
     }
 
     /**

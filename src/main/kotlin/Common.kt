@@ -161,6 +161,19 @@ fun getOptionPane(container: Container, text: String): JOptionPane? {
     return null
 }
 
+fun selectListItem(container: Container, listItemText: String) {
+    val lists = ArrayList<Component>()
+    loadComponents(container, JOptionPane::class.java, lists)
+    for (component in lists) {
+        val list = component as JList<*>
+        val listModel = list.model
+        for (i in 0 until listModel.size) {
+            val item = listModel.getElementAt(i)
+            if (item == listItemText) list.selectedIndex = i
+        }
+    }
+}
+
 /**
  * Gets a JTextField instance at the specified position in the container.
  *
