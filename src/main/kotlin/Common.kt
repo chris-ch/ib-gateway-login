@@ -163,7 +163,7 @@ fun getOptionPane(container: Container, text: String): JOptionPane? {
 
 fun selectListItem(container: Container, listItemText: String) {
     val lists = ArrayList<Component>()
-    loadComponents(container, JOptionPane::class.java, lists)
+    loadComponents(container, JList::class.java, lists)
     for (component in lists) {
         val list = component as JList<*>
         val listModel = list.model
